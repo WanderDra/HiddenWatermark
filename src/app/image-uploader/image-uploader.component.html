@@ -1,0 +1,27 @@
+<input type="file" class="file-input"
+       (change)="onFileSelected($event)" #fileUpload>
+
+<div class="file-upload">
+
+   {{fileName || "Upload original image"}}
+
+    <button mat-mini-fab color="primary" class="upload-btn"
+      (click)="fileUpload.click()">
+        <mat-icon>attach_file</mat-icon>
+    </button>
+</div>
+
+<input type="file" class="file-input"
+       (change)="onWatermarkSelected($event)" #watermarkUpload>
+
+<div class="watermark-upload">
+
+    {{watermarkName || "Upload watermark"}}
+ 
+     <button mat-mini-fab color="primary" class="upload-btn"
+       (click)="watermarkUpload.click()">
+         <mat-icon>attach_file</mat-icon>
+     </button>
+ </div>
+
+ <button (click)="onConnectClicked()">Connect Check</button>
