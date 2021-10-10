@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { FileAPIService } from '../file-api.service';
 
 @Component({
   selector: 'app-image-uploader',
@@ -13,7 +14,7 @@ export class ImageUploaderComponent implements OnInit {
   file?: File;
   watermark?: File;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private fileAPI: FileAPIService) { }
 
   ngOnInit(): void {
   }
@@ -34,8 +35,26 @@ export class ImageUploaderComponent implements OnInit {
     }
   }
 
-  onConnectClicked(){
-    this.http.get('http://127.0.0.1:3000/').subscribe();
+  onUploadClicked(){
+    // this.http.get('http://127.0.0.1:3000/').subscribe();
+    if (this.file && this.watermark){
+      this.fileAPI.uploadOriginalmg('111', this.file).subscribe(
+        ()=>{
+          console.log('Img Uploaded');
+        },
+        (err) => {
+          
+        }
+      );
+      this.fileAPI.uploadWM('111', this.watermark).subscribe(
+        ()=>{
+          console.log('Wm Uploaded');
+        },
+        (err) => {
+          
+        }
+      );
+    }
   }
 
 }

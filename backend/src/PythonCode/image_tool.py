@@ -4,7 +4,7 @@
 import cv2
 import numpy as np
 import random
-from PythonCode.path_tool import path_tool as pt
+import path_tool as pt
 
 
 # align image config

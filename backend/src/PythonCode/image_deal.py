@@ -1,9 +1,11 @@
-from PythonCode import image_tool as it
-from PythonCode import path_tool as pt
+import image_tool as it
+import path_tool as pt
 
 alpha = 40.0
-basic_path = pt.join_path(pt.get_cwd(), 'catalog', 'media')
-p_media = "/catalog/media/"
+basic_path = pt.join_path(pt.get_cwd(), 'images')
+# p_media = "/catalog/media/"
+p_media = "D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend\\images\\"
+
 
 def encode(o_image, wm):
 
@@ -50,6 +52,7 @@ def encode(o_image, wm):
     final_img = it.merge(final_img[0], final_img[1], final_img[2])
 
     new_name = it.save_image_with_new_suffix(final_img, pt.join_path(basic_path, "bwm_"+name), "png")
+    print(pt.join_path(basic_path, "bwm_"+name))
 
     return new_name, p_media + new_name
 
