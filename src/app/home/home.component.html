@@ -1,1 +1,26 @@
-<p>home works!</p>
+<div>
+    <nav>
+        <div>
+            <button mat-button><mat-icon>photo_library</mat-icon> HiddenWatermark </button>
+            <button mat-button (click)="onEncodeBtnClicked()"> Encode </button>
+            <button mat-button (click)="onDecodeBtnClicked()"> Decode </button>
+        </div>
+        <div *ngIf="!islogin">
+            <button mat-button (click)="onLoginBtnClicked()"> Login </button>
+        </div>
+        <div *ngIf="islogin">
+            <button mat-button (click)="onAlbumBtnClicked()"> My Album </button>
+            <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>account_circle</mat-icon></button>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item>Profile</button>
+                <button mat-menu-item (click)="onLogoutClicked()">Log out</button>
+            </mat-menu>
+        </div>
+    </nav>
+</div>
+<app-login-panel 
+    *ngIf="showLoginPanel"
+    (panelclose)="onPanelCloseClicked()"
+    (login)="onLogin()">
+</app-login-panel>
+<router-outlet></router-outlet>

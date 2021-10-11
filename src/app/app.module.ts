@@ -8,19 +8,23 @@ import { ImageUploaderComponent } from './image-uploader/image-uploader.componen
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AMModulesModule } from './ammodules.module';
 import { HttpClientModule } from '@angular/common/http';
+import { LoginPanelComponent } from './login-panel/login-panel.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    ImageUploaderComponent
+    ImageUploaderComponent,
+    LoginPanelComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
     AMModulesModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

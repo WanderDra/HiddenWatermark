@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,40 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  showLoginPanel = false;
+  islogin = false;
+
+  constructor(private route: Router) { }
 
   ngOnInit(): void {
+  }
+
+  onLoginBtnClicked(){
+    this.showLoginPanel = true;
+  }
+
+  onPanelCloseClicked(){
+    this.showLoginPanel = false;
+  }
+
+  onAlbumBtnClicked(){
+
+  }
+
+  onLogoutClicked(){
+    this.islogin = false;
+  }
+
+  onLogin(){
+    this.islogin = true;
+  }
+
+  onEncodeBtnClicked(){
+    this.route.navigate(['encode']);
+  }
+
+  onDecodeBtnClicked(){
+    this.route.navigate(['decode']);
   }
 
 }

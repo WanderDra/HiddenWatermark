@@ -1,0 +1,73 @@
+<div class="background">
+    <mat-card *ngIf="!isRegister" class="login_panel">
+        <button class="close-btn" mat-icon-button (click)="onCloseBtnClicked()"><mat-icon>close</mat-icon></button>
+        <form class="login_form" [formGroup]="loginForm" (ngSubmit)="onLoginSubmited()">
+            <div class="login_inputs">
+                <mat-form-field>
+                    <mat-label>Username</mat-label>
+                    <input matInput formControlName="username">
+                    <mat-error *ngIf="login_username?.errors?.required">Username is <strong>required</strong></mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Password</mat-label>
+                    <input matInput type="password" formControlName="password">
+                    <mat-error *ngIf="login_password?.errors?.required">Password is <strong>required</strong></mat-error>
+                </mat-form-field>
+            </div>
+            <div class="login_btns">
+                <button 
+                    class="login" 
+                    type="submit"
+                    mat-button
+                    (click)="onLoginBtnClicked()">
+                    Login
+                </button>
+                <button 
+                    class="register" 
+                    mat-button color="primary" 
+                    (click)="onToRegisterBtnClicked()">
+                    To Register
+                </button>
+            </div>
+        </form>
+    </mat-card>
+    <mat-card *ngIf="isRegister" class="register_panel">
+        <button class="close-btn" mat-icon-button (click)="onCloseBtnClicked()"><mat-icon>close</mat-icon></button>
+        <form class="register_form" [formGroup]="registerForm" (ngSubmit)="onRegisterSubmited()">
+            <div class="register_inputs">
+                <mat-form-field>
+                    <mat-label>Username</mat-label>
+                    <input matInput formControlName="username">
+                    <mat-error *ngIf="reg_username?.errors?.required">Username is <strong>required</strong></mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Password</mat-label>
+                    <input matInput type="password" formControlName="password">
+                    <mat-error *ngIf="reg_password?.errors?.required">Password is <strong>required</strong></mat-error>
+                </mat-form-field>
+                <mat-form-field>
+                    <mat-label>Comfirm Password</mat-label>
+                    <input matInput type="password" formControlName="confirm" [errorStateMatcher]="matcher">
+                    <mat-error *ngIf="registerForm?.hasError('notMatch') && !reg_confirm?.errors?.required">Password is not <strong>matched </strong>!</mat-error>
+                    <mat-error *ngIf="reg_confirm?.errors?.required">Confirm is <strong>required</strong></mat-error>
+                    <!-- <p> Form: {{ registerForm.valid }} Control: {{ reg_confirm }}{{ reg_confirm?.valid }}</p> -->
+                </mat-form-field>
+            </div>
+            <div class="register_btns">
+                <button 
+                    class="register_btn" 
+                    type="submit"
+                    mat-button
+                    (click)="onRegisterBtnClicked()">
+                    Register
+                </button>
+                <button 
+                    class="cancel_btn" 
+                    mat-button color="primary"
+                    (click)="onCancelBtnClicked()">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </mat-card>
+</div>
