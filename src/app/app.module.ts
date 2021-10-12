@@ -7,9 +7,10 @@ import { HomeComponent } from './home/home.component';
 import { ImageUploaderComponent } from './image-uploader/image-uploader.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AMModulesModule } from './ammodules.module';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginPanelComponent } from './login-panel/login-panel.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { JwtInterceptor } from './jwt.interceptor';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,9 @@ import { ReactiveFormsModule } from '@angular/forms';
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response, Router } from 'express';
+import { KeyManager, Token } from './keygenerator';
+import { getUser, addUser, User, UserDB } from './dbmanager';
 
 // const { spawn } = require('child_process');
 const PythonShell = require('python-shell').PythonShell;
@@ -110,4 +112,72 @@ router.post('/upload_wm', async function (req: Request, res: Response, next: Nex
     res.end("File is uploaded");
   });
   console.log('file received');
+});
+
+router.get('/authenticateTest', async function (req: Request, res: Response, next: NextFunction) {
+  console.log(KeyManager.getServerKey());
+  let token = KeyManager.encrypt('testtest')
+  console.log(token);
+  console.log(KeyManager.decrypt(token.token, token.iv));
+  
+});
+
+/* headers:
+{
+  iv: {iv}
+  token:
+  {
+    oath: HiddenWatermarkProj, 
+    timestamp: {timestamp}
+  }
+}
+*/
+const verify = (token: string, iv: string) => {
+  if (token) {
+    try{
+      let rawToken = KeyManager.decrypt(token, iv).toJSON();
+      if (rawToken['oath'] === KeyManager.oath){
+        // Overtime check can be declared here.
+        return true;
+      }
+    }catch(err){
+      console.log(err);
+      return false;
+    }
+  }
+  return false;
+}
+
+router.post('/authenticate', async function (req: Request, res: Response, next: NextFunction) {
+  let isVerified = verify(req.headers.token.toString(), req.headers.iv.toString());
+  if (isVerified){
+    res.send('permitted');
+    return res.end('User Verified.');
+  }
+  res.send('denied')
+  return res.end('User Not Verified.')
+});
+
+/*
+headers:
+{
+  username: string
+  password: string
+}
+*/
+router.post('/login', async function (req: Request, res: Response, next: NextFunction) {
+  // console.log(req.headers);
+  let user = getUser(req.headers.username.toString()) as User;
+  if(user){
+    if (req.headers.password.toString() === user.password){
+      let token: Token = KeyManager.genToken();
+      res.send({ token: token, type: user.type});
+      res.end(`User ${req.headers.username} logged in`);
+    }
+  }
+  return res.end('User Denied')
+});
+
+router.post('/authenticate-login', async function (req: Request, res: Response, next: NextFunction) {
+
 });

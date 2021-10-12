@@ -1,0 +1,17 @@
+{
+    "id" : "2",
+    "users" : {
+        "test": {
+            "id": "0",
+            "username": "test",
+            "password": "123",
+            "type": "admin"
+        },
+        "user1": {
+            "id": "1",
+            "username": "user1",
+            "password": "321",
+            "type": "user"
+        }
+    }
+}

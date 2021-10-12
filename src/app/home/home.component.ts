@@ -10,6 +10,7 @@ export class HomeComponent implements OnInit {
 
   showLoginPanel = false;
   islogin = false;
+  isAdmin = true;
 
   constructor(private route: Router) { }
 
