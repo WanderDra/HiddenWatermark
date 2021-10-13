@@ -18,11 +18,14 @@ export class JwtInterceptor implements HttpInterceptor {
     const isLoggedIn = currentUser && currentUser.token;
     const isApiUrl = request.url.startsWith(this.loginAPI.basePath);
     if (isLoggedIn && isApiUrl){
+      let iv_str = currentUser!.token.iv.join(',');
       request = request.clone({
         setHeaders: {
-          Authorization: ` ${currentUser!.token} `
+          token: currentUser!.token.token,
+          iv: iv_str
         }
       });
+      // console.log(request);
     }
     
     return next.handle(request);

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { LoginService } from '../login.service';
 
 @Component({
   selector: 'app-home',
@@ -12,9 +13,30 @@ export class HomeComponent implements OnInit {
   islogin = false;
   isAdmin = true;
 
-  constructor(private route: Router) { }
+  constructor(private route: Router, private loginAPI: LoginService) { }
 
   ngOnInit(): void {
+    if (localStorage.getItem('currentUser')){
+      let check = this.loginAPI.loginCheck();
+      if (check !== false){
+        check.subscribe(
+          (res) => {
+            this.islogin = res;
+          },
+          (err) => {
+            console.log("err");
+            console.log(err);
+          }
+        ) 
+      }
+    }
+    this.loginAPI.currentUser$.subscribe(user => {
+      if (user?.type === 'admin'){
+        this.isAdmin = true;
+      }else {
+        this.isAdmin = false;
+      }
+    })
   }
 
   onLoginBtnClicked(){
@@ -30,11 +52,28 @@ export class HomeComponent implements OnInit {
   }
 
   onLogoutClicked(){
+    this.loginAPI.logout();
     this.islogin = false;
   }
 
-  onLogin(){
-    this.islogin = true;
+  onLogin(loginForm: {username: string, password: string}){
+    this.loginAPI.login(loginForm.username, loginForm.password).subscribe(
+      () => {
+        if (this.loginAPI.currentUserValue){
+          this.islogin = true;
+        }
+      }
+    );
+  }
+
+  onRegister(registerForm: {username: string, password: string}){
+    this.loginAPI.register(registerForm.username, registerForm.password).subscribe(
+        () => {
+          if (this.loginAPI.currentUserValue){
+            this.islogin = true;
+        }
+      }
+    )
   }
 
   onEncodeBtnClicked(){

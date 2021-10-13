@@ -1,8 +1,20 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
 import { User } from './user';
+
+interface Token{
+  token: {
+    token: string,
+    iv: {
+      type: string,
+      data: Array<number>
+    }
+  }
+  type: string,
+  id: string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -26,16 +38,79 @@ export class LoginService {
   }
 
   login(username: string, password: string){
-    return this.http.post<any>([this.basePath, 'authenticate'].join('/'), {
-      username,
-      password
+    return this.http.post<any>([this.basePath, 'login'].join('/'), [] ,
+    {
+      headers: 
+      {
+        username,
+        password
+      }
     }).pipe(
-      map(user => {
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          this.currentUserSubject$.next(user);
-          return user;
+      tap((res: Token) => {
+        // console.log(res);
+        let curUser = {
+          username,
+          password,
+          type: res.type,
+          id: res.id,
+          token: {
+            token: res.token.token,
+            iv: res.token.iv.data
+          }
+        } as User
+        localStorage.setItem('currentUser', JSON.stringify(curUser));
+        this.currentUserSubject$.next(curUser);
+        // console.log(localStorage.getItem('currentUser'));
+        // let test = JSON.parse(localStorage.getItem('currentUser')!) as User;
+        // console.log(test);
+        // console.log(test.token!.iv);
       })
     )
+  }
+
+  register(username: string, password: string){
+    return this.http.post<any>([this.basePath, 'register'].join('/'), [], 
+    {
+      headers: {
+        username,
+        password,
+        type: 'user'
+      }
+    }).pipe(
+      tap((res: Token) => {
+        let curUser = {
+          username,
+          password,
+          type: res.type,
+          id: res.id,
+          token: {
+            token: res.token.token,
+            iv: res.token.iv.data
+          }
+        } as User
+        localStorage.setItem('currentUser', JSON.stringify(curUser));
+        this.currentUserSubject$.next(curUser);
+      })
+    )
+  }
+
+  loginCheck() : Observable<boolean> | false{
+    if(this.currentUserValue){
+      return this.http.post<any>([this.basePath, 'authenticate'].join('/'), [], {
+      }).pipe(
+        map((res) => {
+          if (res.res === 'permitted'){
+            return true;
+          }else if (res.res === 'denied') {
+            this.logout();
+            return false;
+          }else{
+            return false;
+          }
+        })
+      )
+    };
+    return false;
   }
 
   logout(){

@@ -22,6 +22,7 @@
 <app-login-panel 
     *ngIf="showLoginPanel"
     (panelclose)="onPanelCloseClicked()"
-    (login)="onLogin()">
+    (login)="onLogin($event)"
+    (register)="onRegister($event)">
 </app-login-panel>
 <router-outlet></router-outlet>

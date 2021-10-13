@@ -1,7 +1,10 @@
 export interface User {
-    id: number,
+    id: string,
     username: string,
     password: string,
     type: string,
-    token?: string
+    token: {
+        token: string,
+        iv: Array<number>
+    }
 }

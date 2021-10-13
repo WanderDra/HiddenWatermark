@@ -29,6 +29,7 @@ export class LoginPanelComponent implements OnInit {
 
   @Output() panelclose = new EventEmitter();
   @Output() login = new EventEmitter();
+  @Output() register = new EventEmitter();
 
   matcher = new CrossFieldErrorMatcher();
 
@@ -81,11 +82,12 @@ export class LoginPanelComponent implements OnInit {
 
   onLoginBtnClicked(){
     this.panelclose.emit();
-    this.login.emit();
+    this.login.emit(this.loginForm.value);
   }
 
   onRegisterBtnClicked(){
-
+    this.panelclose.emit();
+    this.register.emit(this.registerForm.value);
   }
 
   onCloseBtnClicked(){

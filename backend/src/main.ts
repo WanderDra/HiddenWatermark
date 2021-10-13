@@ -4,6 +4,7 @@ import * as express from 'express';
 // const bearerToken = require('express-bearer-token');
 import { router as productRouter } from './controllers'
 import { KeyManager } from './keygenerator';
+import { Jwt } from './jwt'
 // import {oktaAuth} from './auth'
 
 const boot = new Promise((res, rej) => {
@@ -24,6 +25,8 @@ const boot = new Promise((res, rej) => {
   }
 })
   .then(() => {
+    // Jwt.setSign("HiddenWatermarkProj");
+    // console.log(Jwt.oath);
     const app = express()
       // .use(cors())
       // .use(bodyParser.json())
@@ -31,7 +34,7 @@ const boot = new Promise((res, rej) => {
       // .use(oktaAuth)
       .use(function (req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
-        res.header("Access-Control-Allow-Headers", "userid, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization");
+        res.header("Access-Control-Allow-Headers", "userid, password, username, type, token, iv, Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization");
         res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
         next();
       })

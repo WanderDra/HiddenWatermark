@@ -11,7 +11,7 @@ export interface User {
 
 export interface UserDB {
     id: string, 
-    users: User[]
+    users: Object
 }
 
 export const getUser = (username: string): Object | null => {
@@ -28,18 +28,18 @@ export const getUser = (username: string): Object | null => {
     }
 }
 
-export const addUser = (username: string, password: string, type: string) => {
+export const addUser = (username: string, password: string, type: string): {username: string, type: string, id:string} => {
     let userdb = JSON.parse(fs.readFileSync(userdbpath, 'utf8')) as UserDB;
     let id = (Number.parseInt(userdb.id) + 1).toString();
+    console.log(userdb);
     userdb.id = id;
-    userdb.users.push(
-        { id, username, password, type } as User
-    );
+    userdb.users[username] = { id, username, password, type };
+    // userdb.users = Object.assign(userdb.users, {`${username}`: { id, username, password, type }});
     try{
         fs.writeFileSync(userdbpath, JSON.stringify(userdb), 'utf8');
     }catch(err){
         console.log(err);
-        return false;
+        return null;
     }
-    return true;
+    return { username, type, id };
 }

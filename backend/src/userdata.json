@@ -1,17 +1,1 @@
-{
-    "id" : "2",
-    "users" : {
-        "test": {
-            "id": "0",
-            "username": "test",
-            "password": "123",
-            "type": "admin"
-        },
-        "user1": {
-            "id": "1",
-            "username": "user1",
-            "password": "321",
-            "type": "user"
-        }
-    }
-}
+{"id":"4","users":{"test":{"id":"0","username":"test","password":"123","type":"admin"},"user1":{"id":"1","username":"user1","password":"321","type":"user"},"user2":{"id":"3","username":"user2","password":"112233","type":"user"},"user3":{"id":"4","username":"user3","password":"123","type":"user"}}}
