@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from 'express';
 import { KeyManager } from './keygenerator';
 import { getUser, addUser, User, UserDB } from './dbmanager';
-import { Jwt, Token } from './jwt';
+import { Jwt, RawToken, Token } from './jwt';
 
 // const { spawn } = require('child_process');
 const PythonShell = require('python-shell').PythonShell;
@@ -13,36 +13,49 @@ const fs = require('fs');
 export const router: Router = Router();
 
 Jwt.setSign("HiddenWatermarkProj");
-console.log(Jwt.oath);
+
+let storage_path = './uploads';
 
 const original_storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    let path = ['./uploads', req.headers.userid, 'original'].join('/');
+    let userid = 'anomynous'
+    if (req.headers.token){
+      let token = JSON.parse(req.headers.token) as Token;
+      let payload = Jwt.getPayload(token);
+      userid = payload ? payload.userid : 'anomynous';
+    }
+    let path = [storage_path, userid, 'original'].join('/');
     if (!fs.existsSync(path)){
       fs.mkdirSync(path, { recursive: true });
     }
     callback(null, path);
   },
   filename: function (req, file, callback) {
-    callback(null, file.fieldname + '-' + Date.now());
+    callback(null, 'img-' + Date.now());
   }
 });
 
 const wm_storage = multer.diskStorage({
   destination: function (req, file, callback) {
-    let path = ['./uploads', req.headers.userid, 'wm'].join('/');
+    let userid = 'anomynous'
+    if (req.headers.token){
+      let token = JSON.parse(req.headers.token) as Token;
+      let payload = Jwt.getPayload(token);
+      userid = payload ? payload.userid : 'anomynous';
+    }
+    let path = [storage_path, userid, 'wm'].join('/');
     if (!fs.existsSync(path)){
       fs.mkdirSync(path, { recursive: true });
     }
     callback(null, path);
   },
   filename: function (req, file, callback) {
-    callback(null, file.fieldname + '-' + Date.now());
+    callback(null, 'wm-' + Date.now());
   }
 });
 
-const upload_original = multer({ storage : original_storage}).single('original_img');
-const upload_wm = multer({ storage : wm_storage}).single('wm_img');
+const upload_original = multer({ storage : original_storage});
+const upload_wm = multer({ storage : wm_storage});
 
 
 router.get('/', async function (req: Request, res: Response, next: NextFunction) {
@@ -96,34 +109,69 @@ router.get('/decode', async function (req: Request, res: Response, next: NextFun
   }
 });
 
-router.post('/upload_original', async function (req: Request, res: Response, next: NextFunction) {
-  // res.header("Access-Control-Allow-Origin", "*");
-  upload_original(req,res,function(err) {
-    if(err) {
-        return res.end("Error uploading file." + err);
-    }
-    res.end("File is uploaded");
-  });
-  console.log('file received');
+/*
+headers:{
+  userid: string
+}
+body:{
+  original_img: file
+}
+*/
+router.post('/upload_original', upload_original.single('original_img'), function (req: any, res: any) {
+  // send "url" back
+  // console.log(req);
+  // let token = JSON.parse(req.headers.token);
+  try{
+    // let payload = Jwt.getPayload(token)
+    // let userid = payload ? payload.userid : 'anomynous';
+    fs.readFile([req.file.destination, req.file.filename].join('/'), (err, data) => {
+      if (err){
+        console.log(err);
+       res.end('File upload failed') 
+      }
+      res.send({img: data});
+      res.end('File uploaded')
+    });
+    
+  }catch(err){
+    console.log(err);
+    res.end('File upload failed');
+  }
+  
 });
 
-router.post('/upload_wm', async function (req: Request, res: Response, next: NextFunction) {
-  // res.header("Access-Control-Allow-Origin", "*");
-  upload_wm(req,res,function(err) {
-    if(err) {
-        return res.end("Error uploading file." + err);
-    }
-    res.end("File is uploaded");
-  });
-  console.log('file received');
+router.post('/upload_wm', upload_wm.single('wm_img'), function (req: any, res: any) {
+  // send "url" back
+  // let token = JSON.parse(req.headers.token);
+  try{
+    // let payload = Jwt.getPayload(token)
+    // let userid = payload ? payload.userid : 'anomynous';
+    // res.send({imgurl: [process.cwd(), 'uploads', userid, 'wm', req.file.filename].join('\\')});
+    // res.end('File uploaded')
+
+    fs.readFile([req.file.destination, req.file.filename].join('/'), (err, data) => {
+      if (err){
+        console.log(err);
+       res.end('File upload failed') 
+      }
+      res.send({img: data});
+      res.end('File uploaded')
+    });
+
+  }catch(err){
+    console.log(err);
+    res.end('File upload failed');
+  }
 });
 
 router.get('/authenticateTest', async function (req: Request, res: Response, next: NextFunction) {
-  console.log(KeyManager.getServerKey());
-  let token = KeyManager.encrypt('testtest')
-  console.log(token);
-  console.log(KeyManager.decrypt(token));
-  
+  // console.log(KeyManager.getServerKey());
+  // let token = KeyManager.encrypt('testtest')
+  // console.log(token);
+  // console.log(KeyManager.decrypt(token));
+  console.log(req);
+  res.send(req.body);
+  res.end();
 });
 
 /* headers:
@@ -136,14 +184,9 @@ router.get('/authenticateTest', async function (req: Request, res: Response, nex
   }
 }
 */
-
-
 router.post('/authenticate', async function (req: Request, res: Response, next: NextFunction) {
-  let iv = req.headers.iv.toString().split(',').reduce((acc, cur) => {
-    acc.push(Number.parseInt(cur));
-    return acc;
-  }, []);
-  let isVerified = Jwt.verify({token: req.headers.token.toString(), iv: Buffer.from(iv)});
+  let token = JSON.parse(req.headers.token.toString());
+  let isVerified = Jwt.verify(token);
   if (isVerified){
     res.send({res: 'permitted'});
     return res.end('User Verified.');
@@ -164,7 +207,7 @@ router.post('/login', async function (req: Request, res: Response, next: NextFun
   let user = getUser(req.headers.username.toString()) as User;
   if(user){
     if (req.headers.password.toString() === user.password){
-      let token: Token = Jwt.genToken(user.username, user.type);
+      let token: Token = Jwt.genToken(user.id, user.username, user.type);
       res.send({ token: token, type: user.type, id: user.id});
       res.end(`User ${req.headers.username} logged in`);
     }
@@ -183,7 +226,7 @@ headers:
 router.post('/register', async function (req: Request, res: Response, next: NextFunction) {
   let user = addUser(req.headers.username.toString(), req.headers.password.toString(), req.headers.type.toString());
   if (user){
-    let token = Jwt.genToken(user.username, user.type);
+    let token = Jwt.genToken(user.id, user.username, user.type);
     res.send({ token: token, type: user.type, id: user.id});
     res.end(`User ${req.headers.username} registered and logged in`);
   }

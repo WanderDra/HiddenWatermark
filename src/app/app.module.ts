@@ -11,13 +11,15 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoginPanelComponent } from './login-panel/login-panel.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { JwtInterceptor } from './jwt.interceptor';
+import { DropFileDirective } from './drop-file.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     ImageUploaderComponent,
-    LoginPanelComponent
+    LoginPanelComponent,
+    DropFileDirective
   ],
   imports: [
     BrowserModule,

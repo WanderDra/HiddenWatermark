@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginService } from '../login.service';
+import { RestAPIService } from '../rest-api.service';
 
 @Component({
   selector: 'app-home',
@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
   islogin = false;
   isAdmin = true;
 
-  constructor(private route: Router, private loginAPI: LoginService) { }
+  constructor(private route: Router, private loginAPI: RestAPIService) { }
 
   ngOnInit(): void {
     if (localStorage.getItem('currentUser')){

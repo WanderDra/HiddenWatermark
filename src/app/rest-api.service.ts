@@ -19,7 +19,7 @@ interface Token{
 @Injectable({
   providedIn: 'root'
 })
-export class LoginService {
+export class RestAPIService {
 
   basePath = 'http://localhost:3000';
 
@@ -116,6 +116,24 @@ export class LoginService {
   logout(){
     localStorage.removeItem('currentUser');
     this.currentUserSubject$.next(null);
+  }
+
+  upload(file: File, type: string){
+    let httpres = null;
+    let formData = new FormData();
+    switch(type){
+      case 'image':
+        formData.append('original_img', file, file.name);
+        httpres = this.http.post<any>([this.basePath, 'upload_original'].join('/'), formData);
+        break;
+      case 'wm':
+        formData.append('wm_img', file, file.name);
+        httpres = this.http.post<any>([this.basePath, 'upload_wm'].join('/'), formData);
+        break;
+      default:
+        console.log('rest-api: File type error');
+    }
+    return httpres;
   }
 
 }

@@ -6,12 +6,12 @@ import {
   HttpInterceptor
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LoginService } from './login.service';
+import { RestAPIService } from './rest-api.service';
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-  constructor(private loginAPI: LoginService) {}
+  constructor(private loginAPI: RestAPIService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const currentUser = this.loginAPI.currentUserValue;
@@ -21,8 +21,7 @@ export class JwtInterceptor implements HttpInterceptor {
       let iv_str = currentUser!.token.iv.join(',');
       request = request.clone({
         setHeaders: {
-          token: currentUser!.token.token,
-          iv: iv_str
+          token: JSON.stringify(currentUser!.token)
         }
       });
       // console.log(request);

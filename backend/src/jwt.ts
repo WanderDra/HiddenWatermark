@@ -1,6 +1,7 @@
 import { KeyManager } from "./keygenerator";
 
 export interface Payload{
+    userid: string,
     username: string,
     type: string
 }
@@ -28,8 +29,9 @@ export const Jwt = (() => {
     const setSign = (sign: string) => {
         oath = sign;
     }
-    const genToken = (username: string, type: string) =>{
+    const genToken = (userid: string, username: string, type: string) =>{
         let payload: Payload = {
+            userid,
             username,
             type
         };
@@ -43,7 +45,7 @@ export const Jwt = (() => {
     const verify = (token: Token) => {
         if (token) {
             try{
-            let rawToken = KeyManager.decrypt(token);
+            let rawToken = KeyManager.decrypt({token: token.token, iv: Buffer.from(token.iv)});
             if (rawToken.sign.oath === oath){
                 // Overtime check can be declared here.
                 return true;
@@ -59,7 +61,8 @@ export const Jwt = (() => {
     const getPayload = (token: Token): Payload | null => {
         if (token) {
             try{
-                let rawToken = KeyManager.decrypt(token);
+                
+                let rawToken = KeyManager.decrypt({token: token.token, iv: Buffer.from(token.iv)});
                 return rawToken.payload
             } catch (err){
                 console.log(err);

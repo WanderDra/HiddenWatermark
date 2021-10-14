@@ -1,4 +1,4 @@
-<input type="file" class="file-input"
+<!-- <input type="file" class="file-input"
        (change)="onFileSelected($event)" #fileUpload>
 
 <div class="file-upload">
@@ -22,6 +22,27 @@
        (click)="watermarkUpload.click()">
          <mat-icon>attach_file</mat-icon>
      </button>
- </div>
+ </div> -->
 
- <button (click)="onUploadClicked()"> upload </button>
+ <!-- <button (click)="onUploadClicked()"> upload </button> -->
+<div class="input-frame">
+  <div class="image-field">
+    <div class="dropzone" appDropFile *ngIf="!file">
+      <input type="file" #fileUpload class="file-input" multiple (change)="imageBrowseHandler($event.target)">
+      <h3>Drag and drop image here</h3>
+      <h3>or</h3>
+      <button mat-button (click)="fileUpload.click()">Browse here</button>
+    </div>
+    <img *ngIf="fileurl" [srcset]="fileurl">
+  </div>
+  <div class="image-field">
+    <div class="dropzone" appDropFile *ngIf="!watermark">
+      <input type="file" #wmUpload class="file-input" multiple (change)="watermarkBrowseHandler($event.target)">
+      <h3>Drag and drop image here</h3>
+      <h3>or</h3>
+      <button mat-button (click)="wmUpload.click()">Browse here</button>
+    </div>
+    <img *ngIf="watermarkurl" [srcset]="watermarkurl">
+  </div>
+</div>
+<div class="output-frame"></div>
