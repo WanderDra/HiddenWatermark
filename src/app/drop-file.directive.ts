@@ -1,9 +1,12 @@
-import { Directive, HostListener } from '@angular/core';
+import { Directive, HostListener, Output } from '@angular/core';
+import { EventEmitter } from '@angular/core';
 
 @Directive({
   selector: '[appDropFile]'
 })
 export class DropFileDirective {
+
+  @Output() imageUploaded = new EventEmitter();
 
   constructor() { }
 
@@ -23,7 +26,7 @@ export class DropFileDirective {
     const files = evt.dataTransfer.files;
     if( files.length > 0){
       console.log("files dropped");
-      
+      this.imageUploaded.emit(evt.dataTransfer);
     }
   }
 

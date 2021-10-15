@@ -27,22 +27,29 @@
  <!-- <button (click)="onUploadClicked()"> upload </button> -->
 <div class="input-frame">
   <div class="image-field">
-    <div class="dropzone" appDropFile *ngIf="!file">
+    <div class="dropzone" appDropFile *ngIf="!fileurl" (imageUploaded)="imageBrowseHandler($event)">
       <input type="file" #fileUpload class="file-input" multiple (change)="imageBrowseHandler($event.target)">
       <h3>Drag and drop image here</h3>
       <h3>or</h3>
       <button mat-button (click)="fileUpload.click()">Browse here</button>
     </div>
     <img *ngIf="fileurl" [srcset]="fileurl">
+    <label>Original Image</label>
   </div>
   <div class="image-field">
-    <div class="dropzone" appDropFile *ngIf="!watermark">
+    <div class="dropzone" appDropFile *ngIf="!watermarkurl" (imageUploaded)="watermarkBrowseHandler($event)">
       <input type="file" #wmUpload class="file-input" multiple (change)="watermarkBrowseHandler($event.target)">
       <h3>Drag and drop image here</h3>
       <h3>or</h3>
       <button mat-button (click)="wmUpload.click()">Browse here</button>
     </div>
     <img *ngIf="watermarkurl" [srcset]="watermarkurl">
+    <label>Watermark</label>
   </div>
 </div>
-<div class="output-frame"></div>
+<button mat-button class="encode-btn" (click)="onEncodeBtnClicked()">Encode</button>
+<span class="warning"> {{ warning }} </span>
+<div class="output-frame">
+  <label>Encoded Image</label>
+  <img *ngIf="encodedImg" [srcset]="encodedImgUrl">
+</div>

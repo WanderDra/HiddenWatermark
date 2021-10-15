@@ -119,7 +119,7 @@ export class RestAPIService {
   }
 
   upload(file: File, type: string){
-    let httpres = null;
+    let httpres = undefined;
     let formData = new FormData();
     switch(type){
       case 'image':
@@ -134,6 +134,16 @@ export class RestAPIService {
         console.log('rest-api: File type error');
     }
     return httpres;
+  }
+
+  encode(imageUrl: string, wmUrl: string){
+    // let formData = new FormData();
+    // formData.append('imageUrl', imageUrl);
+    // formData.append('wmUrl', wmUrl);
+    return this.http.post<any>([this.basePath, 'encode'].join('/'), {
+      imageUrl: imageUrl,
+      wmUrl: wmUrl
+    });
   }
 
 }

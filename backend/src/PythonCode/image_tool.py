@@ -30,9 +30,12 @@ def save_image(img, path):
 
 # save image as png
 def save_image_with_new_suffix(img, path, suffix="png"):
-    new_path, new_name = pt.change_suffix(path, suffix)
-    cv2.imwrite(new_path, img)
-    return new_name
+    # new_path, new_name = pt.change_suffix(path, suffix)
+    if suffix == "":
+        cv2.imwrite(path, img)
+    else:
+        cv2.imwrite(path + '.' + suffix, img)
+    return path
 
 
 # complement of original img

@@ -25,18 +25,25 @@ def get_file_whole_name(path):
 # get file name by path without suffix
 def get_file_name(path):
     whole_name = get_file_whole_name(path)
-    return re.findall(r'(.+?)\.', whole_name)[0]
+    if len(re.findall(r'(.+?)\.', whole_name)) == 0:
+      return whole_name
+    else:
+      return re.findall(r'(.+?)\.', whole_name)[0]
 
 
 # extract path before the last "/"
 def get_file_path(path):
-    pattern = ""
-    if split == "\\":
-        pattern = r"(.+\\).+?\."
-    else:
-        pattern = "(.+" + split + ").+?\."
-    h = re.findall(r"" + pattern, path)
-    return re.findall(r"" + pattern, path)[0]
+    # pattern = ""
+    # if split == "\\" or split == "/":
+    #     pattern = r"(.+\\).+?\."
+    # else:
+    #     pattern = "(.+" + split + ").+?\."
+    # h = re.findall(r"" + pattern, path)
+    # print(h)
+    # print(path)
+    return path.split('/')[-1].split('\\')[-1]
+
+    # return re.findall(r"" + pattern, path)[0]
 
 
 # change suffix

@@ -10,8 +10,23 @@
 }
 
 .image-field{
+  position: relative;
+  width: 50%;
+  height: 400px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.image-field img{
+  height: 100%;
   width: 100%;
-  height: fit-content;
+}
+
+.image-field label{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: silver;
 }
 
 .dropzone{
@@ -27,11 +42,38 @@
 }
 
 .dropzone button{
-  background-color: skyblue;
   width: 120px;
   text-align: center;
 }
 
 .dropzone *{
   margin: 10px;
+}
+
+button{
+  background-color: skyblue;
+}
+
+.encode-btn{
+  margin: 10px;
+}
+
+.output-frame{
+  width: 100%;
+  height: 400px;
+  border: 1px dashed gray;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.output-frame label{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: silver;
+}
+
+.output-frame img{
+  height: 100%;
 }

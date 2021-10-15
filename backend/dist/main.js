@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 // import * as cors from 'cors';
-// import * as bodyParser from 'body-parser';
+const bodyParser = require("body-parser");
 // const bearerToken = require('express-bearer-token');
 const controllers_1 = require("./controllers");
 const keygenerator_1 = require("./keygenerator");
@@ -28,7 +28,8 @@ const boot = new Promise((res, rej) => {
     // console.log(Jwt.oath);
     const app = express()
         // .use(cors())
-        // .use(bodyParser.json())
+        .use(bodyParser.json())
+        .use(bodyParser.urlencoded({ extended: true }))
         // .use(bearerToken())
         // .use(oktaAuth)
         .use(function (req, res, next) {
