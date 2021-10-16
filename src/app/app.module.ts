@@ -12,6 +12,7 @@ import { LoginPanelComponent } from './login-panel/login-panel.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { JwtInterceptor } from './jwt.interceptor';
 import { DropFileDirective } from './drop-file.directive';
+import { ImageDecoderComponent } from './image-decoder/image-decoder.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { DropFileDirective } from './drop-file.directive';
     HomeComponent,
     ImageUploaderComponent,
     LoginPanelComponent,
-    DropFileDirective
+    DropFileDirective,
+    ImageDecoderComponent
   ],
   imports: [
     BrowserModule,

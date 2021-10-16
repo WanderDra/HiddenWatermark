@@ -54,7 +54,7 @@ button{
   background-color: skyblue;
 }
 
-.encode-btn{
+.decode-btn{
   margin: 10px;
 }
 
@@ -83,6 +83,6 @@ button{
 }
 
 h2{
-  text-align: center;
-  margin: 5px;
-}
+    text-align: center;
+    margin: 5px;
+  }

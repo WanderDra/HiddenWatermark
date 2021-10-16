@@ -25,6 +25,7 @@
  </div> -->
 
  <!-- <button (click)="onUploadClicked()"> upload </button> -->
+ <h2> Encoder </h2>
 <div class="input-frame">
   <div class="image-field">
     <div class="dropzone" appDropFile *ngIf="!fileurl" (imageUploaded)="imageBrowseHandler($event)">
@@ -39,7 +40,7 @@
   <div class="image-field">
     <div class="dropzone" appDropFile *ngIf="!watermarkurl" (imageUploaded)="watermarkBrowseHandler($event)">
       <input type="file" #wmUpload class="file-input" multiple (change)="watermarkBrowseHandler($event.target)">
-      <h3>Drag and drop image here</h3>
+      <h3>Drag and drop signature here</h3>
       <h3>or</h3>
       <button mat-button (click)="wmUpload.click()">Browse here</button>
     </div>

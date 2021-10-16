@@ -130,6 +130,10 @@ export class RestAPIService {
         formData.append('wm_img', file, file.name);
         httpres = this.http.post<any>([this.basePath, 'upload_wm'].join('/'), formData);
         break;
+      case 'encoded':
+        formData.append('encoded_img', file, file.name);
+        httpres = this.http.post<any>([this.basePath, 'upload_encoded'].join('/'), formData);
+        break;
       default:
         console.log('rest-api: File type error');
     }
@@ -141,8 +145,15 @@ export class RestAPIService {
     // formData.append('imageUrl', imageUrl);
     // formData.append('wmUrl', wmUrl);
     return this.http.post<any>([this.basePath, 'encode'].join('/'), {
-      imageUrl: imageUrl,
-      wmUrl: wmUrl
+      imageUrl,
+      wmUrl
+    });
+  }
+
+  decode(originalUrl: string, encodedUrl: string){
+    return this.http.post<any>([this.basePath, 'decode'].join('/'), {
+      originalUrl,
+      encodedUrl
     });
   }
 

@@ -54,8 +54,28 @@ const wm_storage = multer.diskStorage({
   }
 });
 
+const encoded_storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    let userid = 'anomynous'
+    if (req.headers.token){
+      let token = JSON.parse(req.headers.token) as Token;
+      let payload = Jwt.getPayload(token);
+      payload ? userid = payload.userid : null;
+    }
+    let path = [storage_path, userid, 'encoded'].join('/');
+    if (!fs.existsSync(path)){
+      fs.mkdirSync(path, { recursive: true });
+    }
+    callback(null, path);
+  },
+  filename: function (req, file, callback) {
+    callback(null, 'bwm-' + Date.now());
+  }
+});
+
 const upload_original = multer({ storage : original_storage});
 const upload_wm = multer({ storage : wm_storage});
+const upload_encoded = multer({storage : encoded_storage});
 
 
 router.get('/', async function (req: Request, res: Response, next: NextFunction) {
@@ -89,9 +109,9 @@ router.post('/encode', async function (req: any, res: any, next: NextFunction) {
     let outputPath = ['uploads', userid, 'encoded'].join('\\');
     imgPath = imgPath.substring(2);
     wmPath = wmPath.substring(2);
-    console.log(imgPath);
-    console.log(wmPath);
-    console.log(outputPath);
+    // console.log(imgPath);
+    // console.log(wmPath);
+    // console.log(outputPath);
     if (!fs.existsSync(outputPath)){
       fs.mkdirSync(outputPath, { recursive: true });
     }
@@ -122,35 +142,69 @@ router.post('/encode', async function (req: any, res: any, next: NextFunction) {
       });
     }
     catch(err){
-      res.end('File encoded error');
+      res.end('File encode error');
       console.log(err);
     }
   }
   catch (err) {
-    res.end('File encoded error');
+    res.end('File encode error');
     return next(err);
   }
 });
 
-router.get('/decode', async function (req: Request, res: Response, next: NextFunction) {
-  // res.header("Access-Control-Allow-Origin", "*");
+router.post('/decode', async function (req: any, res: any, next: NextFunction) {
   try {
+    let userid = 'anomynous'
+    if (req.headers.token){
+      let token = JSON.parse(req.headers.token) as Token;
+      let payload = Jwt.getPayload(token);
+      payload ? userid = payload.userid : null;
+    }
+    console.log(req.body);
+    let originalUrl: string = req.body.originalUrl;
+    let encodedUrl: string = req.body.encodedUrl;
+    let outputPath = ['uploads', userid, 'decoded'].join('\\');
+    originalUrl = originalUrl.substring(2);
+    encodedUrl = encodedUrl.substring(2);
+    // console.log(imgPath);
+    // console.log(wmPath);
+    // console.log(outputPath);
+    if (!fs.existsSync(outputPath)){
+      fs.mkdirSync(outputPath, { recursive: true });
+    }
     var options = {
       mode: 'text',
       pythonPath: 'D:\\Python3\\python.exe',
       pythonOptions: ['-u'],
       scriptPath: 'D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend\\src\\PythonCode',
-      args: ['TestImage.jpg', 'bwm_TestImage.png']
+      args: [originalUrl, encodedUrl, outputPath]
     };
-
-    PythonShell.run('decode.py', options, function (err, results) {
-      if (err) throw err;
-      console.log('finished');
-      console.log('results: %j', results);
-    });
-    
+    try{
+      PythonShell.run('decode.py', options, function (err, results) {
+        if (err) throw err;
+        console.log('finished');
+        console.log('results: %j', results);
+        fs.readFile(results[results.length-1] + '.png', (err, data)=>{
+          if (err){
+            console.log(err);
+            res.end('File encode error');
+            return;
+          }
+          else{
+            res.send({res: data});
+            res.end('File Decoded');
+          }
+        })
+        
+      });
+    }
+    catch(err){
+      res.end('File decode error');
+      console.log(err);
+    }
   }
   catch (err) {
+    res.end('File decode error');
     return next(err);
   }
 });
@@ -188,6 +242,30 @@ router.post('/upload_original', upload_original.single('original_img'), function
 });
 
 router.post('/upload_wm', upload_wm.single('wm_img'), function (req: any, res: any) {
+  // send "url" back
+  // let token = JSON.parse(req.headers.token);
+  try{
+    // let payload = Jwt.getPayload(token)
+    // let userid = payload ? payload.userid : 'anomynous';
+    // res.send({imgurl: [process.cwd(), 'uploads', userid, 'wm', req.file.filename].join('\\')});
+    // res.end('File uploaded')
+    let filepath = [req.file.destination, req.file.filename].join('/');
+    fs.readFile(filepath, (err, data) => {
+      if (err){
+        console.log(err);
+       res.end('File upload failed') 
+      }
+      res.send({res: filepath});
+      res.end('File uploaded')
+    });
+
+  }catch(err){
+    console.log(err);
+    res.end('File upload failed');
+  }
+});
+
+router.post('/upload_encoded', upload_encoded.single('encoded_img'), function (req: any, res: any) {
   // send "url" back
   // let token = JSON.parse(req.headers.token);
   try{

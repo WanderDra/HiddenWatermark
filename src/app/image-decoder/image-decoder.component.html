@@ -1,0 +1,29 @@
+<h2> Decoder </h2>
+<div class="input-frame">
+    <div class="image-field">
+      <div class="dropzone" appDropFile *ngIf="!originalImgUrl" (imageUploaded)="imageBrowseHandler($event)">
+        <input type="file" #fileUpload class="file-input" multiple (change)="imageBrowseHandler($event.target)">
+        <h3>Drag and drop Original Image here</h3>
+        <h3>or</h3>
+        <button mat-button (click)="fileUpload.click()">Browse here</button>
+      </div>
+      <img *ngIf="originalImgUrl" [srcset]="originalImgUrl">
+      <label>Original Image</label>
+    </div>
+    <div class="image-field">
+      <div class="dropzone" appDropFile *ngIf="!encodedImgUrl" (imageUploaded)="encodedImageBrowseHandler($event)">
+        <input type="file" #wmUpload class="file-input" multiple (change)="encodedImageBrowseHandler($event.target)">
+        <h3>Drag and drop Encoded Image here</h3>
+        <h3>or</h3>
+        <button mat-button (click)="wmUpload.click()">Browse here</button>
+      </div>
+      <img *ngIf="encodedImgUrl" [srcset]="encodedImgUrl">
+      <label>Encoded Image</label>
+    </div>
+  </div>
+  <button mat-button class="decode-btn" (click)="onDecodeBtnClicked()">Decode</button>
+  <span class="warning"> {{ warning }} </span>
+  <div class="output-frame">
+    <label>Decoded Image</label>
+    <img *ngIf="decodedImg" [srcset]="decodedImgUrl">
+  </div>

@@ -2,7 +2,8 @@ import image_tool as it
 import path_tool as pt
 
 alpha = 40.0
-basic_path = pt.join_path(pt.get_cwd())
+# basic_path = pt.join_path(pt.get_cwd())
+basic_path = pt.join_path('D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend');
 # p_media = "/catalog/media/"
 p_media = "D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend\\"
 
@@ -11,7 +12,6 @@ def encode(o_image, wm, output):
 
     # name of original image
     name = o_image
-    basic_path = pt.join_path('D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend');
     o_image = it.optimal_shape(it.load_image(pt.join_path(basic_path, name)))
     wm = it.optimal_shape_gray(it.load_image_grey(pt.join_path(basic_path, wm)))
     wm = it.complement(wm)
@@ -52,7 +52,7 @@ def encode(o_image, wm, output):
     final_img = it.merge(final_img[0], final_img[1], final_img[2])
     # print(name.split('/')[-1])
     print(pt.join_path(basic_path, output,"bwm_"+name.split('/')[-1]))
-    new_name = it.save_image_with_new_suffix(final_img, pt.join_path(basic_path, output,"bwm_"+name.split('/')[-1]), "png")
+    new_name = it.save_image_with_new_suffix(final_img, pt.join_path(basic_path, output, "bwm_"+name.split('/')[-1]), "png")
 
     return new_name, p_media + new_name
 
@@ -75,7 +75,8 @@ def decode(o_image, bwm_image, output, is_align=False):
         wm.append(t)
     wm = it.merge(wm[0], wm[1], wm[2])
 
-    new_name = it.save_image_with_new_suffix(wm, pt.join_path(basic_path, output, "dwm_" + name), "png")
+    print(pt.join_path(basic_path, output,"dwm_"+name.split('/')[-1]))
+    new_name = it.save_image_with_new_suffix(wm, pt.join_path(basic_path, output, "dwm_" + name.split('/')[-1]), "png")
 
     return new_name, p_media + new_name
 
