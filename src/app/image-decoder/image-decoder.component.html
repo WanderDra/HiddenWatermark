@@ -5,7 +5,11 @@
         <input type="file" #fileUpload class="file-input" multiple (change)="imageBrowseHandler($event.target)">
         <h3>Drag and drop Original Image here</h3>
         <h3>or</h3>
-        <button mat-button (click)="fileUpload.click()">Browse here</button>
+        <div>
+          <button mat-button (click)="fileUpload.click()"> Upload </button>
+          <button mat-raised-button (click)="openAlbum('original')">Browse Album</button>
+        </div>
+        
       </div>
       <img *ngIf="originalImgUrl" [srcset]="originalImgUrl">
       <label>Original Image</label>
@@ -15,7 +19,11 @@
         <input type="file" #wmUpload class="file-input" multiple (change)="encodedImageBrowseHandler($event.target)">
         <h3>Drag and drop Encoded Image here</h3>
         <h3>or</h3>
-        <button mat-button (click)="wmUpload.click()">Browse here</button>
+        <div>
+          <button mat-button (click)="wmUpload.click()">Browse here</button>
+          <button mat-raised-button (click)="openAlbum('encoded')">Browse Album</button>
+        </div>
+        
       </div>
       <img *ngIf="encodedImgUrl" [srcset]="encodedImgUrl">
       <label>Encoded Image</label>

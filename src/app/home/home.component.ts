@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
   }
 
   onAlbumBtnClicked(){
-
+    this.route.navigate(['album']);
   }
 
   onLogoutClicked(){

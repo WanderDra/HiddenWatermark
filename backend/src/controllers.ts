@@ -9,6 +9,7 @@ var multer  =   require('multer');
 const express = require('express');
 const fs = require('fs');
 // const formidable = require('formidable');
+const resolve = require('path').resolve
 
 export const router: Router = Router();
 
@@ -356,4 +357,68 @@ router.post('/register', async function (req: Request, res: Response, next: Next
     res.end(`User ${req.headers.username} registered and logged in`);
   }
   return res.end('User Denied')
+});
+
+/**
+ * headers:
+ * {
+ *  token: Token
+ * }
+ */
+router.get('/album/:type/:userid', function(req: any, res: Response, next: NextFunction){
+  let token: Token = JSON.parse(req.headers.token);
+  if (!Jwt.verify(token)){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return;
+  }
+  let payload = Jwt.getPayload(token);
+  if (payload.userid !== req.params.userid){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return;
+  }
+  // let testpath = 'D:/Angular/Final-Evaluation/HiddenWatermark/backend/uploads'
+  fs.readdir([storage_path, req.params.userid, req.params.type].join('/'), (err: Error, files: string[])=>{
+    // res.sendFile([testpath, req.params.userid, req.params.type, files[0]].join('/'));
+    res.send(files);
+    res.end('Files read successfully.');
+  })
+});
+
+/**
+ * headers:
+ * {
+ *  token: Token
+ * }
+ */
+router.get('/album/:type/:userid/:filename', function(req: any, res: Response, next: NextFunction){
+  // console.log(req.headers.token);
+  let token: Token = JSON.parse(req.headers.token);
+  if (!Jwt.verify(token)){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return;
+  }
+  let payload = Jwt.getPayload(token);
+  if (payload.userid !== req.params.userid){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return;
+  }
+  // console.log(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')));
+  res.sendFile(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')), (err: Error)=>{
+    if (err){
+      console.log(err);
+      res.sendStatus(403);
+      res.end('File transfer error.');
+      next(err);
+    } else{
+      res.end('File transfer successfully');
+    }
+  });
 });

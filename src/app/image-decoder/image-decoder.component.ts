@@ -4,6 +4,8 @@ import { concatMap, tap } from 'rxjs/operators';
 import { Buffer } from 'buffer';
 import { FileAPIService } from '../file-api.service';
 import { RestAPIService } from '../rest-api.service';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { AlbumBottomSheetComponent } from '../album-bottom-sheet/album-bottom-sheet.component';
 
 @Component({
   selector: 'app-image-decoder',
@@ -23,7 +25,8 @@ export class ImageDecoderComponent implements OnInit {
   constructor(
     private http: HttpClient, 
     private fileAPI: FileAPIService,
-    private restAPI: RestAPIService
+    private restAPI: RestAPIService,
+    private bottomSheet: MatBottomSheet
     ) {
       this.originalImgUrl = '';
       this.encodedImgUrl = '';
@@ -106,6 +109,10 @@ export class ImageDecoderComponent implements OnInit {
         this.warning = "*Please upload original image."
       }
     }
+  }
+
+  openAlbum(type: string){
+    this.bottomSheet.open(AlbumBottomSheetComponent, {data: {type}});
   }
 
 }

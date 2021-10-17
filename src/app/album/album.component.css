@@ -1,0 +1,17 @@
+.btns{
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+}
+
+.btns button{
+    margin: 5px;
+}
+
+.encode-btn{
+    background-color: skyblue;
+}
+
+.decode-btn{
+    background-color: rosybrown;
+}

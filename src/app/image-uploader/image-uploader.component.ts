@@ -6,6 +6,8 @@ import { RestAPIService } from '../rest-api.service';
 import { Buffer } from 'buffer';
 import { concat, Observable } from 'rxjs';
 import { concatMap, exhaustMap, takeUntil, tap } from 'rxjs/operators';
+import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { AlbumBottomSheetComponent } from '../album-bottom-sheet/album-bottom-sheet.component';
 
 @Component({
   selector: 'app-image-uploader',
@@ -27,7 +29,8 @@ export class ImageUploaderComponent implements OnInit {
   constructor(
     private http: HttpClient, 
     private fileAPI: FileAPIService,
-    private restAPI: RestAPIService
+    private restAPI: RestAPIService,
+    private bottomSheet: MatBottomSheet
     ) {
       this.fileurl = '';
       this.watermarkurl = '';
@@ -171,6 +174,10 @@ export class ImageUploaderComponent implements OnInit {
         this.warning = "*Please upload original image."
       }
     }
+  }
+
+  openAlbum(type: string){
+    this.bottomSheet.open(AlbumBottomSheetComponent, {data: {type: type}});
   }
 
 }

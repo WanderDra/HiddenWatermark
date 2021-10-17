@@ -1,0 +1,8 @@
+<div class="container">
+    <div class="img-block" 
+        [ngClass]="image.isSelected" 
+        *ngFor="let image of imageList; let i = index" 
+        (click)="onImgClicked(i)">
+        <img [srcset]="image.src | srcAuth | async">
+    </div>
+</div>

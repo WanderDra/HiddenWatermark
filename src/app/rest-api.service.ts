@@ -157,4 +157,13 @@ export class RestAPIService {
     });
   }
 
+  getImages(type: string){
+    return this.http.get<any>([this.basePath, 'album', type, this.currentUserValue?.id].join('/'));
+  }
+
+  getImageUrl(type: string, img: string){
+    // return this.http.get<any>([this.basePath, type, this.currentUserValue?.id, img].join('/'));
+    return [this.basePath, 'album', type, this.currentUserValue?.id, img].join('/');
+  }
+
 }

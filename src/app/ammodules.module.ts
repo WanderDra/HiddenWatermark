@@ -4,6 +4,7 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatCardModule} from '@angular/material/card';
 import {MatInputModule} from '@angular/material/input';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 
 
 
@@ -13,7 +14,8 @@ import {MatMenuModule} from '@angular/material/menu';
     MatButtonModule,
     MatCardModule,
     MatInputModule,
-    MatMenuModule
+    MatMenuModule,
+    MatBottomSheetModule
   ]
 })
 export class AMModulesModule { }

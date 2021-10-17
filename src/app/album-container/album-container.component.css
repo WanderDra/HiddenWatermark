@@ -1,0 +1,31 @@
+.container{
+    display: flex;
+    flex-flow: row wrap;
+    width: 95%;
+    border: 1px solid gray;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 2px 2px gray;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.img-block{
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border: 1px solid white;
+}
+
+.img-block:hover{
+    outline: 1px solid skyblue;
+}
+
+.img-block img{
+    height: 80px;
+}
+
+.selected {
+    border: 3px solid rgb(70, 70, 209);
+}
