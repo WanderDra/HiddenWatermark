@@ -25,6 +25,7 @@ export class RestAPIService {
 
   private currentUserSubject$: BehaviorSubject<User | null>;
   currentUser$: Observable<User | null>;
+  isLoggedIn$ = new BehaviorSubject<boolean>(false);
 
   constructor(private http: HttpClient) {
     this.currentUserSubject$ = new BehaviorSubject<User | null>(JSON.parse(
@@ -164,6 +165,23 @@ export class RestAPIService {
   getImageUrl(type: string, img: string){
     // return this.http.get<any>([this.basePath, type, this.currentUserValue?.id, img].join('/'));
     return [this.basePath, 'album', type, this.currentUserValue?.id, img].join('/');
+  }
+
+  getImageFromUrl(url: string){
+    return this.http.get<any>(url, {responseType: 'blob' as 'json'});
+  }
+
+  // http://localhost:3000/album/wm/0/img-1634348212977 
+  // -> 
+  // ./uploads/0/wm/wm-1634448367549
+  getOldUrl(url: string | undefined){
+    if (url !== undefined){
+      let strs = url.split('/');
+      let oldUrl = ['./uploads', strs[5], strs[4], strs[6]].join('/');
+      return oldUrl;
+    } else{
+      return undefined;
+    }
   }
 
 }

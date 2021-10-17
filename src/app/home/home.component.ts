@@ -13,15 +13,19 @@ export class HomeComponent implements OnInit {
   islogin = false;
   isAdmin = true;
 
-  constructor(private route: Router, private loginAPI: RestAPIService) { }
+  constructor(private route: Router, private restAPI: RestAPIService) { }
 
   ngOnInit(): void {
+    this.restAPI.isLoggedIn$.subscribe(data =>{
+        this.islogin = data;
+      }
+    );
     if (localStorage.getItem('currentUser')){
-      let check = this.loginAPI.loginCheck();
+      let check = this.restAPI.loginCheck();
       if (check !== false){
         check.subscribe(
           (res) => {
-            this.islogin = res;
+            this.restAPI.isLoggedIn$.next(res);
           },
           (err) => {
             console.log("err");
@@ -30,7 +34,7 @@ export class HomeComponent implements OnInit {
         ) 
       }
     }
-    this.loginAPI.currentUser$.subscribe(user => {
+    this.restAPI.currentUser$.subscribe(user => {
       if (user?.type === 'admin'){
         this.isAdmin = true;
       }else {
@@ -52,25 +56,25 @@ export class HomeComponent implements OnInit {
   }
 
   onLogoutClicked(){
-    this.loginAPI.logout();
-    this.islogin = false;
+    this.restAPI.logout();
+    this.restAPI.isLoggedIn$.next(false);
   }
 
   onLogin(loginForm: {username: string, password: string}){
-    this.loginAPI.login(loginForm.username, loginForm.password).subscribe(
+    this.restAPI.login(loginForm.username, loginForm.password).subscribe(
       () => {
-        if (this.loginAPI.currentUserValue){
-          this.islogin = true;
+        if (this.restAPI.currentUserValue){
+          this.restAPI.isLoggedIn$.next(true);
         }
       }
     );
   }
 
   onRegister(registerForm: {username: string, password: string}){
-    this.loginAPI.register(registerForm.username, registerForm.password).subscribe(
+    this.restAPI.register(registerForm.username, registerForm.password).subscribe(
         () => {
-          if (this.loginAPI.currentUserValue){
-            this.islogin = true;
+          if (this.restAPI.currentUserValue){
+            this.restAPI.isLoggedIn$.next(true);
         }
       }
     )

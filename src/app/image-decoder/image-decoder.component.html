@@ -6,13 +6,14 @@
         <h3>Drag and drop Original Image here</h3>
         <h3>or</h3>
         <div>
-          <button mat-button (click)="fileUpload.click()"> Upload </button>
-          <button mat-raised-button (click)="openAlbum('original')">Browse Album</button>
+          <button mat-raised-button (click)="fileUpload.click()"> Upload </button>
+          <button mat-raised-button [disabled]="!isLogin" (click)="openAlbum('original')">Browse Album</button>
         </div>
         
       </div>
-      <img *ngIf="originalImgUrl" [srcset]="originalImgUrl">
+      <img *ngIf="originalImgUrl" [srcset]="originalImgUrl | srcAuth | async">
       <label>Original Image</label>
+      <button *ngIf="originalImgUrl" mat-icon-button class="cancel-btn" (click)="onImageCancelBtnClicked()">X</button>
     </div>
     <div class="image-field">
       <div class="dropzone" appDropFile *ngIf="!encodedImgUrl" (imageUploaded)="encodedImageBrowseHandler($event)">
@@ -20,16 +21,17 @@
         <h3>Drag and drop Encoded Image here</h3>
         <h3>or</h3>
         <div>
-          <button mat-button (click)="wmUpload.click()">Browse here</button>
-          <button mat-raised-button (click)="openAlbum('encoded')">Browse Album</button>
+          <button mat-raised-button (click)="wmUpload.click()"> Upload </button>
+          <button mat-raised-button [disabled]="!isLogin" (click)="openAlbum('encoded')">Browse Album</button>
         </div>
         
       </div>
-      <img *ngIf="encodedImgUrl" [srcset]="encodedImgUrl">
+      <img *ngIf="encodedImgUrl" [srcset]="encodedImgUrl | srcAuth | async">
       <label>Encoded Image</label>
+      <button *ngIf="encodedImgUrl" mat-icon-button class="cancel-btn" (click)="onEncCancelBtnClicked()">X</button>
     </div>
   </div>
-  <button mat-button class="decode-btn" (click)="onDecodeBtnClicked()">Decode</button>
+  <button mat-raised-button class="decode-btn" (click)="onDecodeBtnClicked()">Decode</button>
   <span class="warning"> {{ warning }} </span>
   <div class="output-frame">
     <label>Decoded Image</label>

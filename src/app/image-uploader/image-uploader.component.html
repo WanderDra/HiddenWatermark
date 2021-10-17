@@ -34,11 +34,12 @@
       <h3>or</h3>
       <div>
         <button mat-raised-button (click)="fileUpload.click()">Upload</button>
-        <button mat-raised-button (click)="openAlbum('original')">Browse Album</button>
+        <button mat-raised-button [disabled]="!isLogin" (click)="openAlbum('original')">Browse Album</button>
       </div>
     </div>
-    <img *ngIf="fileurl" [srcset]="fileurl">
+    <img *ngIf="fileurl" [srcset]="fileurl | srcAuth | async">
     <label>Original Image</label>
+    <button *ngIf="fileurl" mat-icon-button class="cancel-btn" (click)="onImageCancelBtnClicked()">X</button>
   </div>
   <div class="image-field">
     <div class="dropzone" appDropFile *ngIf="!watermarkurl" (imageUploaded)="watermarkBrowseHandler($event)">
@@ -47,11 +48,12 @@
       <h3>or</h3>
       <div>
         <button mat-raised-button (click)="wmUpload.click()">Upload</button>
-        <button mat-raised-button (click)="openAlbum('wm')">Browse Album</button>
+        <button mat-raised-button [disabled]="!isLogin" (click)="openAlbum('wm')">Browse Album</button>
       </div>
     </div>
-    <img *ngIf="watermarkurl" [srcset]="watermarkurl">
+    <img *ngIf="watermarkurl" [srcset]="watermarkurl | srcAuth | async">
     <label>Watermark</label>
+    <button *ngIf="watermarkurl" mat-icon-button class="cancel-btn" (click)="onWMCancelBtnClicked()">X</button>
   </div>
 </div>
 <button mat-raised-button class="encode-btn" (click)="onEncodeBtnClicked()">Encode</button>

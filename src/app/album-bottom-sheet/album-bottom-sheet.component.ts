@@ -1,5 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatBottomSheetRef, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { FileAPIService } from '../file-api.service';
 import { RestAPIService } from '../rest-api.service';
 
 @Component({
@@ -10,14 +11,14 @@ import { RestAPIService } from '../rest-api.service';
 export class AlbumBottomSheetComponent implements OnInit {
 
   title = "TestTest";
-  type = "";
-  imgList: Array<{src: string, isSelected: string}> = [];
+  imgList: Array<{name: string, src: string, isSelected: string}> = [];
   selected: number | undefined = undefined;
 
   constructor(
     private bottomSheetRef: MatBottomSheetRef<AlbumBottomSheetComponent>,
     @Inject(MAT_BOTTOM_SHEET_DATA) public data: {type: string},
-    private restAPI: RestAPIService
+    private restAPI: RestAPIService,
+    private fileAPI: FileAPIService
     ) { 
 
   }
@@ -36,6 +37,7 @@ export class AlbumBottomSheetComponent implements OnInit {
             res.forEach((imgName: string) => {
               this.imgList.push(
                 {
+                  name: imgName,
                   src: this.restAPI.getImageUrl('original', imgName), 
                   isSelected: ""
                 });
@@ -50,6 +52,7 @@ export class AlbumBottomSheetComponent implements OnInit {
             res.forEach((imgName: string) => {
               this.imgList.push(
                 {
+                  name: imgName,
                   src: this.restAPI.getImageUrl('wm', imgName), 
                   isSelected: ""
                 });
@@ -64,6 +67,7 @@ export class AlbumBottomSheetComponent implements OnInit {
             res.forEach((imgName: string) => {
               this.imgList.push(
                 {
+                  name: imgName,
                   src: this.restAPI.getImageUrl('encoded', imgName), 
                   isSelected: ""
                 });
@@ -78,6 +82,38 @@ export class AlbumBottomSheetComponent implements OnInit {
 
   getSelected(index: number | undefined){
     this.selected = index;
+  }
+
+  onSelectBtnClicked(){
+    if (this.selected !== undefined){
+      switch(this.data.type){
+        case 'original':
+          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
+            (res: File) => {
+              this.fileAPI.imgFile$.next(res);
+            }
+          );
+          this.fileAPI.imgUrl$.next(this.imgList[this.selected].src);
+          break;
+        case 'wm':
+          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
+            (res: File) => {
+              this.fileAPI.wmFile$.next(res);
+            }
+          );
+          this.fileAPI.wmUrl$.next(this.imgList[this.selected].src);
+          break;
+        case 'encoded':
+          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
+            (res: File) => {
+              this.fileAPI.encFile$.next(res);
+            }
+          );
+          this.fileAPI.encUrl$.next(this.imgList[this.selected].src);
+          break;
+      }
+      console.log(this.imgList[this.selected].src);
+    }
   }
 
 }

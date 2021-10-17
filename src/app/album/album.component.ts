@@ -12,9 +12,9 @@ export class AlbumComponent implements OnInit {
   selectedImg?: number;
   selectedSign?: number;
   selectedEnc?: number;
-  imgList: Array<{src: string, isSelected: string}> = [];
-  signList: Array<{src: string, isSelected: string}> = [];
-  encList: Array<{src: string, isSelected: string}> = [];
+  imgList: Array<{name: string, src: string, isSelected: string}> = [];
+  signList: Array<{name: string, src: string, isSelected: string}> = [];
+  encList: Array<{name: string, src: string, isSelected: string}> = [];
 
   constructor(private restAPI: RestAPIService) {
   }
@@ -25,6 +25,7 @@ export class AlbumComponent implements OnInit {
         res.forEach((imgName: string) => {
           this.imgList.push(
             {
+              name: imgName,
               src: this.restAPI.getImageUrl('original', imgName), 
               isSelected: ""
             });
@@ -36,6 +37,7 @@ export class AlbumComponent implements OnInit {
         res.forEach((imgName: string) => {
           this.signList.push(
             {
+              name: imgName,
               src: this.restAPI.getImageUrl('wm', imgName), 
               isSelected: ""
             });
@@ -47,6 +49,7 @@ export class AlbumComponent implements OnInit {
         res.forEach((imgName: string) => {
           this.encList.push(
             {
+              name: imgName,
               src: this.restAPI.getImageUrl('encoded', imgName), 
               isSelected: ""
             });

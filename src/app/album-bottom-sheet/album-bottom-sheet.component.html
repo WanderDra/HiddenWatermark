@@ -4,5 +4,5 @@
     class="container"
     [imageList]="imgList"
     (selected)="getSelected($event)"></app-album-container>
-    <button mat-raised-button class="select-btn"> Select </button>
+    <button mat-raised-button class="select-btn" (click)="onSelectBtnClicked()"> Select </button>
 </div>

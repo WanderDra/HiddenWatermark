@@ -4,9 +4,9 @@ import { Event } from '@angular/router';
 import { FileAPIService } from '../file-api.service';
 import { RestAPIService } from '../rest-api.service';
 import { Buffer } from 'buffer';
-import { concat, Observable } from 'rxjs';
+import { concat, Observable, Subscriber, Subscription } from 'rxjs';
 import { concatMap, exhaustMap, takeUntil, tap } from 'rxjs/operators';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
+import { MatBottomSheet, MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { AlbumBottomSheetComponent } from '../album-bottom-sheet/album-bottom-sheet.component';
 
 @Component({
@@ -16,15 +16,14 @@ import { AlbumBottomSheetComponent } from '../album-bottom-sheet/album-bottom-sh
 })
 export class ImageUploaderComponent implements OnInit {
   
-  fileName = '';
-  watermarkName = '';
-  file?: File;
-  watermark?: File;
-  fileurl : string | File;
-  watermarkurl : string | File;
-  encodedImg = null;
+  fileurl?: string;
+  watermarkurl?: string;
+  encodedImg: File | undefined = undefined;
   encodedImgUrl = '';
   warning = '';
+  isImgUpload = false;
+  isWMUpload = false;
+  isLogin = false;
 
   constructor(
     private http: HttpClient, 
@@ -32,49 +31,24 @@ export class ImageUploaderComponent implements OnInit {
     private restAPI: RestAPIService,
     private bottomSheet: MatBottomSheet
     ) {
-      this.fileurl = '';
-      this.watermarkurl = '';
     }
 
   ngOnInit(): void {
-  }
-
-  onFileSelected(event: any){
-    const file:File = event.target.files[0];
-    if (file){
-      this.fileName = file.name;
-      this.file = file;
-    }
-  }
-
-  onWatermarkSelected(event: any){
-    const file:File = event.target.files[0];
-    if (file){
-      this.watermarkName = file.name;
-      this.watermark = file;
-    }
-  }
-
-  onUploadClicked(){
-    // this.http.get('http://127.0.0.1:3000/').subscribe();
-    if (this.file && this.watermark){
-      this.fileAPI.uploadOriginalmg('111', this.file).subscribe(
-        ()=>{
-          console.log('Img Uploaded');
-        },
-        (err) => {
-          
-        }
-      );
-      this.fileAPI.uploadWM('111', this.watermark).subscribe(
-        ()=>{
-          console.log('Wm Uploaded');
-        },
-        (err) => {
-          
-        }
-      );
-    }
+    this.restAPI.isLoggedIn$.subscribe(data => {
+      this.isLogin = data;
+    })
+    this.fileAPI.imgUrl$.subscribe(data => {
+      this.fileurl = data;
+    })
+    this.fileAPI.wmUrl$.subscribe(data => {
+      this.watermarkurl = data;
+    })
+    this.fileAPI.imgFile$.next(undefined);
+    this.fileAPI.imgUrl$.next(undefined);
+    this.fileAPI.wmFile$.next(undefined);
+    this.fileAPI.wmUrl$.next(undefined);
+    this.isImgUpload = false;
+    this.isWMUpload = false;
   }
 
   imageBrowseHandler(evt: EventTarget | null){
@@ -91,17 +65,18 @@ export class ImageUploaderComponent implements OnInit {
     //   }
     // }
     if (evt){
+      this.isImgUpload = true;
       let image = evt as HTMLInputElement;
       if (image.files){
         if (image.files[0].type.match(/image\/*/) === null){
           console.log("Invalid file type");
           return;
         }
-        this.file = image.files[0];
+        this.fileAPI.imgFile$.next(image.files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(image.files[0]);
         reader.onload = () => {
-          this.fileurl = reader.result as string;
+          this.fileAPI.imgUrl$.next(reader.result as string);
         };
       }
     }
@@ -120,17 +95,18 @@ export class ImageUploaderComponent implements OnInit {
     //   }
     // }
     if (evt){
+      this.isWMUpload = true;
       let image = evt as HTMLInputElement;
       if (image.files){
         if (image.files[0].type.match(/image\/*/) === null){
           console.log("Invalid file type");
           return;
         }
-        this.watermark = image.files[0];
+        this.fileAPI.wmFile$.next(image.files[0]);
         const reader = new FileReader();
         reader.readAsDataURL(image.files[0]);
         reader.onload = () => {
-          this.watermarkurl = reader.result as string;
+          this.fileAPI.wmUrl$.next(reader.result as string);
         };
       }
     }
@@ -138,28 +114,64 @@ export class ImageUploaderComponent implements OnInit {
   }
 
   onEncodeBtnClicked(){
-    if (this.watermark && this.file){
+    if (this.fileAPI.wmFile$.value && this.fileAPI.imgFile$.value){
       this.warning = '';
       let imageUrl = '';
       let wmUrl = '';
-      let imgUploadSub = this.restAPI.upload(this.file, 'image');
-      let wmUploadSub = this.restAPI.upload(this.watermark, 'wm');
-      imgUploadSub = imgUploadSub?.pipe(
-        tap((res: any) => {
-          imageUrl = res.res;
-        })
-      )
-      wmUploadSub = wmUploadSub?.pipe(
-        tap((res: any) =>{
-          // this.watermarkurl = 'data:image/jpeg;base64,'+Buffer.from(res.img).toString('base64');
-          wmUrl = res.res;
-        })
-      )
+      let imgUploadSub: Observable<any> | undefined = undefined;
+      let wmUploadSub: Observable<any> | undefined = undefined;
+      if (this.isImgUpload){
+        imgUploadSub = this.restAPI.upload(this.fileAPI.imgFile$.value, 'image')!
+          .pipe(
+            tap((res: any) => {
+              imageUrl = res.res;
+            })
+          )
+      }else{
+        imageUrl = this.restAPI.getOldUrl(this.fileAPI.imgUrl$.value)!;
+      }
+      if (this.isWMUpload){
+        wmUploadSub = this.restAPI.upload(this.fileAPI.wmFile$.value, 'wm')!
+          .pipe(
+            tap((res: any) =>{
+              // this.watermarkurl = 'data:image/jpeg;base64,'+Buffer.from(res.img).toString('base64');
+              wmUrl = res.res;
+            })
+          )
+      }else{
+        wmUrl = this.restAPI.getOldUrl(this.fileAPI.wmUrl$.value)!;
+      }
       
       if (imgUploadSub && wmUploadSub){
         imgUploadSub.pipe(
           concatMap(() => wmUploadSub!),
+          concatMap(() => {
+            console.log(imageUrl, wmUrl);
+            return this.restAPI.encode(imageUrl, wmUrl)
+          }),
+          tap((res) => {
+            this.encodedImg = res.res;
+            this.encodedImgUrl = 'data:image/jpeg;base64,'+Buffer.from(res.res).toString('base64');
+          })
+        ).subscribe();
+      } else if(imgUploadSub){
+        imgUploadSub.pipe(
           concatMap(() => this.restAPI.encode(imageUrl, wmUrl)),
+          tap((res) => {
+            this.encodedImg = res.res;
+            this.encodedImgUrl = 'data:image/jpeg;base64,'+Buffer.from(res.res).toString('base64');
+          })
+        ).subscribe();
+      } else if(wmUploadSub){
+        wmUploadSub.pipe(
+          concatMap(() => this.restAPI.encode(imageUrl, wmUrl)),
+          tap((res) => {
+            this.encodedImg = res.res;
+            this.encodedImgUrl = 'data:image/jpeg;base64,'+Buffer.from(res.res).toString('base64');
+          })
+        ).subscribe();
+      } else{
+        this.restAPI.encode(imageUrl, wmUrl).pipe(
           tap((res) => {
             this.encodedImg = res.res;
             this.encodedImgUrl = 'data:image/jpeg;base64,'+Buffer.from(res.res).toString('base64');
@@ -167,10 +179,10 @@ export class ImageUploaderComponent implements OnInit {
         ).subscribe();
       }
     } else{
-      if (!this.watermark){
+      if (!this.fileAPI.wmFile$.value){
         this.warning = "*Please upload watermark."
       }
-      if (!this.file){
+      if (!this.fileAPI.imgFile$.value){
         this.warning = "*Please upload original image."
       }
     }
@@ -178,6 +190,18 @@ export class ImageUploaderComponent implements OnInit {
 
   openAlbum(type: string){
     this.bottomSheet.open(AlbumBottomSheetComponent, {data: {type: type}});
+  }
+
+  onImageCancelBtnClicked(){
+    this.fileAPI.imgFile$.next(undefined);
+    this.fileAPI.imgUrl$.next(undefined);
+    this.isImgUpload = false;
+  }
+
+  onWMCancelBtnClicked(){
+    this.fileAPI.wmFile$.next(undefined);
+    this.fileAPI.wmUrl$.next(undefined);
+    this.isWMUpload = false;
   }
 
 }

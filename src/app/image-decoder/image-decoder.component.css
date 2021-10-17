@@ -86,3 +86,9 @@ h2{
     text-align: center;
     margin: 5px;
   }
+
+  .cancel-btn{
+    position: absolute;
+    right: 5%;
+    top: 5%;
+  }
