@@ -29,3 +29,9 @@
 .selected {
     border: 3px solid rgb(70, 70, 209);
 }
+
+.remove-btn{
+    margin: 5px;
+    background-color: darkred;
+    color: white;
+}

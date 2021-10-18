@@ -43,10 +43,10 @@ export class ImageUploaderComponent implements OnInit {
     this.fileAPI.wmUrl$.subscribe(data => {
       this.watermarkurl = data;
     })
-    this.fileAPI.imgFile$.next(undefined);
-    this.fileAPI.imgUrl$.next(undefined);
-    this.fileAPI.wmFile$.next(undefined);
-    this.fileAPI.wmUrl$.next(undefined);
+    // this.fileAPI.imgFile$.next(undefined);
+    // this.fileAPI.imgUrl$.next(undefined);
+    // this.fileAPI.wmFile$.next(undefined);
+    // this.fileAPI.wmUrl$.next(undefined);
     this.isImgUpload = false;
     this.isWMUpload = false;
   }
@@ -114,14 +114,14 @@ export class ImageUploaderComponent implements OnInit {
   }
 
   onEncodeBtnClicked(){
-    if (this.fileAPI.wmFile$.value && this.fileAPI.imgFile$.value){
+    if (this.fileAPI.wmUrl$.value && this.fileAPI.imgUrl$.value){
       this.warning = '';
       let imageUrl = '';
       let wmUrl = '';
       let imgUploadSub: Observable<any> | undefined = undefined;
       let wmUploadSub: Observable<any> | undefined = undefined;
       if (this.isImgUpload){
-        imgUploadSub = this.restAPI.upload(this.fileAPI.imgFile$.value, 'image')!
+        imgUploadSub = this.restAPI.upload(this.fileAPI.imgFile$.value!, 'image')!
           .pipe(
             tap((res: any) => {
               imageUrl = res.res;
@@ -131,7 +131,7 @@ export class ImageUploaderComponent implements OnInit {
         imageUrl = this.restAPI.getOldUrl(this.fileAPI.imgUrl$.value)!;
       }
       if (this.isWMUpload){
-        wmUploadSub = this.restAPI.upload(this.fileAPI.wmFile$.value, 'wm')!
+        wmUploadSub = this.restAPI.upload(this.fileAPI.wmFile$.value!, 'wm')!
           .pipe(
             tap((res: any) =>{
               // this.watermarkurl = 'data:image/jpeg;base64,'+Buffer.from(res.img).toString('base64');
@@ -179,10 +179,10 @@ export class ImageUploaderComponent implements OnInit {
         ).subscribe();
       }
     } else{
-      if (!this.fileAPI.wmFile$.value){
+      if (!this.fileAPI.wmUrl$.value){
         this.warning = "*Please upload watermark."
       }
-      if (!this.fileAPI.imgFile$.value){
+      if (!this.fileAPI.imgUrl$.value){
         this.warning = "*Please upload original image."
       }
     }

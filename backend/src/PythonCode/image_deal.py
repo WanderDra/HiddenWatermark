@@ -2,10 +2,9 @@ import image_tool as it
 import path_tool as pt
 
 alpha = 40.0
-# basic_path = pt.join_path(pt.get_cwd())
-basic_path = pt.join_path('D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend');
+basic_path = pt.join_path(pt.get_cwd())
+p_media = pt.join_path(pt.get_cwd())
 # p_media = "/catalog/media/"
-p_media = "D:\\Angular\\Final-Evaluation\\HiddenWatermark\\backend\\"
 
 
 def encode(o_image, wm, output):

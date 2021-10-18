@@ -14,6 +14,7 @@
                     <mat-error *ngIf="login_password?.errors?.required">Password is <strong>required</strong></mat-error>
                 </mat-form-field>
             </div>
+            <p class="warning-banner" *ngIf="warning">{{ warning }}</p>
             <div class="login_btns">
                 <button 
                     class="login" 

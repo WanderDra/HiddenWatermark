@@ -15,3 +15,7 @@
 .decode-btn{
     background-color: rosybrown;
 }
+
+.delete-btn{
+    margin: 10px;
+}

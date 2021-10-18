@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { AlbumContainerComponent } from '../album-container/album-container.component';
+import { FileAPIService } from '../file-api.service';
 import { RestAPIService } from '../rest-api.service';
 
 @Component({
@@ -16,7 +19,16 @@ export class AlbumComponent implements OnInit {
   signList: Array<{name: string, src: string, isSelected: string}> = [];
   encList: Array<{name: string, src: string, isSelected: string}> = [];
 
-  constructor(private restAPI: RestAPIService) {
+  @ViewChild('Img', {static: true}) imgRef?: AlbumContainerComponent;
+  @ViewChild('WM', {static: true}) wmRef?: AlbumContainerComponent;
+  @ViewChild('Enc', {static: true}) encRef?: AlbumContainerComponent;
+
+
+  constructor(
+    private restAPI: RestAPIService, 
+    private fileAPI: FileAPIService,
+    private route: Router
+    ) {
   }
 
   ngOnInit(): void {
@@ -59,10 +71,25 @@ export class AlbumComponent implements OnInit {
   }
 
   onEncodeBtnClicked(){
-    
+    if (this.selectedImg !== undefined && this.selectedSign !== undefined){
+      this.fileAPI.imgUrl$.next(this.imgList[this.selectedImg].src);
+      this.fileAPI.wmUrl$.next(this.signList[this.selectedSign].src);
+      this.route.navigate(['encode']);
+    }
   }
 
   onDecodeBtnClicked(){
+    if (this.selectedImg !== undefined && this.selectedEnc !== undefined){
+      this.fileAPI.imgUrl$.next(this.imgList[this.selectedImg].src);
+      this.fileAPI.encUrl$.next(this.encList[this.selectedEnc].src);
+      this.route.navigate(['decode']);
+    }
+  }
+
+  onDeleteBtnClicked(){
+    this.imgRef?.switchMode()
+    this.wmRef?.switchMode()
+    this.encRef?.switchMode()
 
   }
 

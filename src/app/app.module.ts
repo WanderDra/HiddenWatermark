@@ -13,11 +13,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { JwtInterceptor } from './jwt.interceptor';
 import { DropFileDirective } from './drop-file.directive';
 import { ImageDecoderComponent } from './image-decoder/image-decoder.component';
-import { AlbumContainerComponent } from './album-container/album-container.component';
-import { AlbumComponent } from './album/album.component';
 import { SrcAuthPipe } from './src-auth.pipe';
+import { AlbumContainerComponent } from './album-container/album-container.component';
 import { AlbumBottomSheetComponent } from './album-bottom-sheet/album-bottom-sheet.component';
-
+import { AlbumComponent } from './album/album.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,9 +25,9 @@ import { AlbumBottomSheetComponent } from './album-bottom-sheet/album-bottom-she
     LoginPanelComponent,
     DropFileDirective,
     ImageDecoderComponent,
+    SrcAuthPipe,
     AlbumContainerComponent,
     AlbumComponent,
-    SrcAuthPipe,
     AlbumBottomSheetComponent
   ],
   imports: [

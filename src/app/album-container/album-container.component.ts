@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { RestAPIService } from '../rest-api.service';
 
 @Component({
   selector: 'app-album-container',
@@ -14,30 +15,61 @@ export class AlbumContainerComponent implements OnInit {
   }> = [];
   
   selectedImg?: number;
+
+  removeMode = false;
   
   @Output() selected = new EventEmitter<number | undefined>();
 
-  constructor() { }
+  constructor(private restAPI: RestAPIService) { }
 
   ngOnInit(): void {
   }
 
+  switchMode(){
+    this.removeMode = !this.removeMode;
+    this.imageList.forEach((img) => img.isSelected = "");
+  }
+
   onImgClicked(index: number){
-    if (index === this.selectedImg){
-      this.imageList[index].isSelected = "";
-      this.selectedImg = undefined;
+    if (!this.removeMode){
+      if (index === this.selectedImg){
+        this.imageList[index].isSelected = "";
+        this.selectedImg = undefined;
+        this.selected.emit(this.selectedImg);
+        return;
+      }
+      this.imageList[index].isSelected = "selected";
+      if (this.selectedImg !== undefined){
+        this.imageList[this.selectedImg].isSelected = "";
+        this.selectedImg = index;
+      }else{
+        this.selectedImg = index;
+      }
       this.selected.emit(this.selectedImg);
-      return;
+    } else{
+      if (!this.imageList[index].isSelected){
+        this.imageList[index].isSelected = "selected";
+      }else{
+        this.imageList[index].isSelected = "";
+      }
     }
-    this.imageList[index].isSelected = "selected";
-    if (this.selectedImg !== undefined){
-      this.imageList[this.selectedImg].isSelected = "";
-      this.selectedImg = index;
-    }else{
-      this.selectedImg = index;
-    }
-    this.selected.emit(this.selectedImg);
-    return;
+  }
+
+  onRemoveClicked(){
+    let removeList: Array<number> = [];
+    this.imageList.forEach((img, i) =>{
+      if (img.isSelected){
+        this.restAPI.deleteImage(img.src).subscribe();
+        removeList.push(i);
+      }
+    })
+    this.imageList = this.imageList.reduce((acc, cur, i) => {
+      if (!removeList.includes(i)){
+        acc.push(cur);
+      }
+      return acc;
+    }, new Array<{src: string, isSelected: string}>());
+    
   }
 
 }

@@ -6,3 +6,4 @@
         <img [srcset]="image.src | srcAuth | async">
     </div>
 </div>
+<button class="remove-btn" mat-button *ngIf="removeMode" (click)="onRemoveClicked()">Remove</button>

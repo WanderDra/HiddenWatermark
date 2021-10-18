@@ -1,20 +1,21 @@
 <h3>My Pictures</h3>
-<app-album-container 
+<app-album-container #Img
 (selected)="getSelectedImg($event)" 
 [imageList]="imgList"></app-album-container>
 <h3>My Signatures</h3>
-<app-album-container 
+<app-album-container #WM
 (selected)="getSelectedSign($event)" 
 [imageList]="signList"></app-album-container>
 <h3>My Encoded Pictures</h3>
-<app-album-container 
+<app-album-container #Enc
 (selected)="getSelectedEnc($event)" 
 [imageList]="encList"></app-album-container>
 <div class="btns">
     <button mat-button class="encode-btn"
-    *ngIf="selectedImg && selectedSign" 
+    *ngIf="selectedImg !== undefined && selectedSign !== undefined" 
     (click)="onEncodeBtnClicked()">Encode</button>
     <button mat-button class="decode-btn"
-    *ngIf="selectedImg && selectedEnc"
+    *ngIf="selectedImg !== undefined && selectedEnc !== undefined"
     (click)="onDecodeBtnClicked()">Decode</button>
 </div>
+<button mat-fab class="delete-btn" (click)="onDeleteBtnClicked()"><mat-icon>delete</mat-icon></button>

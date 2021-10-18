@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit {
   onLogoutClicked(){
     this.restAPI.logout();
     this.restAPI.isLoggedIn$.next(false);
+    window.location.reload();
   }
 
   onLogin(loginForm: {username: string, password: string}){
@@ -86,6 +87,14 @@ export class HomeComponent implements OnInit {
 
   onDecodeBtnClicked(){
     this.route.navigate(['decode']);
+  }
+
+  onLoginPanelClicked(){
+    this.route.navigate(['admin']);
+  }
+
+  onProfileBtnClicked(){
+    this.route.navigate(['profile']);
   }
 
 }

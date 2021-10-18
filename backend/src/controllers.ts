@@ -17,6 +17,24 @@ Jwt.setSign("HiddenWatermarkProj");
 
 let storage_path = './uploads';
 
+const checkUser = (req: Request, res: Response) => {
+  let token: Token = JSON.parse(req.headers.token.toString());
+  if (!Jwt.verify(token)){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return false;
+  }
+  let payload = Jwt.getPayload(token);
+  if (payload.userid !== req.params.userid){
+    res.send('User Error.');
+    res.sendStatus(401);
+    res.end('User Error.');
+    return false;
+  }
+  return true;
+}
+
 const original_storage = multer.diskStorage({
   destination: function (req, file, callback) {
     let userid = 'anomynous'
@@ -310,7 +328,7 @@ router.get('/authenticateTest', async function (req: Request, res: Response, nex
   }
 }
 */
-router.post('/authenticate', async function (req: Request, res: Response, next: NextFunction) {
+router.get('/authenticate', async function (req: Request, res: Response, next: NextFunction) {
   let token = JSON.parse(req.headers.token.toString());
   let isVerified = Jwt.verify(token);
   if (isVerified){
@@ -328,7 +346,30 @@ headers:
   password: string
 }
 */
-router.post('/login', async function (req: Request, res: Response, next: NextFunction) {
+router.get('/check', function(req: any, res: Response, next: NextFunction) {
+  // Frequency check can be done here.
+  let user = getUser(req.headers.username.toString()) as User;
+  if (user){
+    if (req.headers.password.toString() === user.password){
+      res.send({res: 'pass'});
+    } else{
+      res.send({res: 'password'});
+    }
+  }
+  else{
+    res.send({res: 'username'});
+  }
+  res.end();
+})
+
+/*
+headers:
+{
+  username: string
+  password: string
+}
+*/
+router.get('/login', async function (req: Request, res: Response, next: NextFunction) {
   // console.log(req.headers);
   let user = getUser(req.headers.username.toString()) as User;
   if(user){
@@ -349,7 +390,7 @@ headers:
   type: string
 }
 */
-router.post('/register', async function (req: Request, res: Response, next: NextFunction) {
+router.get('/register', async function (req: Request, res: Response, next: NextFunction) {
   let user = addUser(req.headers.username.toString(), req.headers.password.toString(), req.headers.type.toString());
   if (user){
     let token = Jwt.genToken(user.id, user.username, user.type);
@@ -366,26 +407,14 @@ router.post('/register', async function (req: Request, res: Response, next: Next
  * }
  */
 router.get('/album/:type/:userid', function(req: any, res: Response, next: NextFunction){
-  let token: Token = JSON.parse(req.headers.token);
-  if (!Jwt.verify(token)){
-    res.send('User Error.');
-    res.sendStatus(401);
-    res.end('User Error.');
-    return;
+  if (checkUser(req, res)){
+    // let testpath = 'D:/Angular/Final-Evaluation/HiddenWatermark/backend/uploads'
+    fs.readdir([storage_path, req.params.userid, req.params.type].join('/'), (err: Error, files: string[])=>{
+      // res.sendFile([testpath, req.params.userid, req.params.type, files[0]].join('/'));
+      res.send(files);
+      res.end('Files read successfully.');
+    })
   }
-  let payload = Jwt.getPayload(token);
-  if (payload.userid !== req.params.userid){
-    res.send('User Error.');
-    res.sendStatus(401);
-    res.end('User Error.');
-    return;
-  }
-  // let testpath = 'D:/Angular/Final-Evaluation/HiddenWatermark/backend/uploads'
-  fs.readdir([storage_path, req.params.userid, req.params.type].join('/'), (err: Error, files: string[])=>{
-    // res.sendFile([testpath, req.params.userid, req.params.type, files[0]].join('/'));
-    res.send(files);
-    res.end('Files read successfully.');
-  })
 });
 
 /**
@@ -396,29 +425,42 @@ router.get('/album/:type/:userid', function(req: any, res: Response, next: NextF
  */
 router.get('/album/:type/:userid/:filename', function(req: any, res: Response, next: NextFunction){
   // console.log(req.headers.token);
-  let token: Token = JSON.parse(req.headers.token);
-  if (!Jwt.verify(token)){
-    res.send('User Error.');
-    res.sendStatus(401);
-    res.end('User Error.');
-    return;
+  if (checkUser(req, res)){
+    // console.log(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')));
+    res.sendFile(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')), (err: Error)=>{
+      if (err){
+        console.log(err);
+        res.sendStatus(403);
+        res.end('File transfer error.');
+        next(err);
+      } else{
+        res.end('File transfer successfully');
+      }
+    });
   }
-  let payload = Jwt.getPayload(token);
-  if (payload.userid !== req.params.userid){
-    res.send('User Error.');
-    res.sendStatus(401);
-    res.end('User Error.');
-    return;
-  }
-  // console.log(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')));
-  res.sendFile(resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/')), (err: Error)=>{
-    if (err){
-      console.log(err);
-      res.sendStatus(403);
-      res.end('File transfer error.');
-      next(err);
-    } else{
-      res.end('File transfer successfully');
-    }
-  });
 });
+
+router.get('/album/remove/:type/:userid/:filename', function(req: any, res: Response, next: NextFunction){
+  if(checkUser(req, res)){
+    let path = resolve([storage_path, req.params.userid, req.params.type, req.params.filename].join('/'));
+    fs.stat(path, (err, stats) => {
+      if (err){
+        console.log('No file founded.')
+        res.send('Error');
+        res.end('No file founded.');
+        return;
+      }
+      fs.unlink(path, (err)=>{
+        if(err){
+          console.log('Delete failed.')
+          res.send('Error');
+          res.end('Delete failed.');
+        }else{
+          res.send('Success');
+          res.end('Delete successfully.');
+        }
+      })
+    })
+  }
+
+})

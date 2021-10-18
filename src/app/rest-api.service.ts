@@ -38,8 +38,17 @@ export class RestAPIService {
     return this.currentUserSubject$.value;
   }
 
+  check(username: string, password: string){
+    return this.http.get<any>([this.basePath, 'check'].join('/'), {
+      headers:{
+        username,
+        password
+      }
+    });
+  }
+
   login(username: string, password: string){
-    return this.http.post<any>([this.basePath, 'login'].join('/'), [] ,
+    return this.http.get<any>([this.basePath, 'login'].join('/'),
     {
       headers: 
       {
@@ -47,6 +56,10 @@ export class RestAPIService {
         password
       }
     }).pipe(
+      catchError(err => {
+        console.log(err);
+        return of(err);
+      }),
       tap((res: Token) => {
         // console.log(res);
         let curUser = {
@@ -70,7 +83,7 @@ export class RestAPIService {
   }
 
   register(username: string, password: string){
-    return this.http.post<any>([this.basePath, 'register'].join('/'), [], 
+    return this.http.get<any>([this.basePath, 'register'].join('/'), 
     {
       headers: {
         username,
@@ -97,7 +110,7 @@ export class RestAPIService {
 
   loginCheck() : Observable<boolean> | false{
     if(this.currentUserValue){
-      return this.http.post<any>([this.basePath, 'authenticate'].join('/'), [], {
+      return this.http.get<any>([this.basePath, 'authenticate'].join('/'), {
       }).pipe(
         map((res) => {
           if (res.res === 'permitted'){
@@ -177,11 +190,29 @@ export class RestAPIService {
   getOldUrl(url: string | undefined){
     if (url !== undefined){
       let strs = url.split('/');
-      let oldUrl = ['./uploads', strs[5], strs[4], strs[6]].join('/');
+      let relLoc = strs.length - 1;
+      let oldUrl = ['./uploads', strs[relLoc-1], strs[relLoc-2], strs[relLoc]].join('/');
       return oldUrl;
     } else{
       return undefined;
     }
+  }
+
+  deleteImage(url: string){
+    let urls = url.split('/');
+    let relPos = urls.length - 4;
+    
+    let removeUrls = urls.reduce((acc, cur, i) => {
+      if (i < relPos){
+        return acc;
+      }
+      if (i === relPos){
+        cur = [cur, 'remove'].join('/');
+      }
+      acc = [acc, cur].join('/');
+      return acc;
+    }, this.basePath)
+    return this.http.get<any>(removeUrls, {responseType: 'text' as 'json'});
   }
 
 }

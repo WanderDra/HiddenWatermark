@@ -88,32 +88,17 @@ export class AlbumBottomSheetComponent implements OnInit {
     if (this.selected !== undefined){
       switch(this.data.type){
         case 'original':
-          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
-            (res: File) => {
-              this.fileAPI.imgFile$.next(res);
-            }
-          );
           this.fileAPI.imgUrl$.next(this.imgList[this.selected].src);
           break;
         case 'wm':
-          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
-            (res: File) => {
-              this.fileAPI.wmFile$.next(res);
-            }
-          );
           this.fileAPI.wmUrl$.next(this.imgList[this.selected].src);
           break;
         case 'encoded':
-          this.restAPI.getImageFromUrl(this.imgList[this.selected].src).subscribe(
-            (res: File) => {
-              this.fileAPI.encFile$.next(res);
-            }
-          );
           this.fileAPI.encUrl$.next(this.imgList[this.selected].src);
           break;
       }
-      console.log(this.imgList[this.selected].src);
     }
+    this.bottomSheetRef.dismiss();
   }
 
 }
